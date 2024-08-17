@@ -183,5 +183,3 @@ def run_solar_system():
     pygame.quit()
 
 run_solar_system()
-
-gg
