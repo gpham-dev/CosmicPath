@@ -12,16 +12,16 @@ import pygame
 import math
 import planet_data
 
+# Pygame simulation window preferences
 pygame.init()
-
 WIDTH, HEIGHT = 1900, 1000
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Planet Simulation")
-
 WHITE = (255, 255, 255)
-
 FONT = pygame.font.SysFont("comicsans", 16)
 
+# Represents a planet in the simulation with physical properties, orbital dynamics, 
+# and methods for drawing and updating its position based on gravitational forces.
 class Planet:
     G = 6.6743e-11    # Gravitational constant or attraction between two objects
     TIMESTEP = 3600*24    # 1 day in seconds
@@ -76,38 +76,47 @@ class Planet:
         other_x, other_y = other.x, other.y
         distance_x = other_x - self.x
         distance_y = other_y - self.y
-        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)    # Using Pythagorean Theorem to find distance between two planetary bodies
 
         if other.sun:
             self.distance_to_sun = distance
 
-        force = self.G * self.mass * other.mass / distance ** 2
-        theta = math.atan2(distance_y,distance_x)
-        force_x = math.cos(theta)*force
-        force_y = math.sin(theta)*force
+        force = self.G * self.mass * other.mass / distance ** 2    # Gravitational force using Newton's Law of Universal Graviation
+        theta = math.atan2(distance_y,distance_x)   # Angle between the two planets and the horizontal axis
+        force_x = math.cos(theta)*force    # Gravitational force in the x-direction
+        force_y = math.sin(theta)*force    # Gravitational force in the y-direction
         return force_x, force_y
-
+    
+    # Update planet's position and velocity based on gravitational force from other planetary bodies
     def update_position(self,planets):
+
+        # Initializing total x and y direction forces
         total_fx = total_fy = 0
+
+        # Iteration through each planet to calculate gravitational force
         for planet in planets:
             if self == planet:
                 continue
-
+            # Gravitational force exerted by current planet
             fx, fy = self.attraction(planet)
+            # Sum of the forces in x and y directions
             total_fx += fx
             total_fy += fy
         
-        self.x_vel += total_fx / self.mass * self.TIMESTEP
+        # Update planet's velocity based on total force and mass using Newton's second law:
+        # Force = mass * acceleration (F=m*a)
+        self.x_vel += total_fx / self.mass * self.TIMESTEP 
         self.y_vel += total_fy / self.mass * self.TIMESTEP
 
+        # Update planet's position based on velocity using Newton's second law of motion
         self.x += self.x_vel * self.TIMESTEP
         self.y += self.y_vel * self.TIMESTEP
         self.orbit.append((self.x,self.y))
 
+# Initialize and run the planetary simulation
+def run_solar_system():
 
-
-
-def main():
+    # Initialize simulation parameters
     run = True
     clock = pygame.time.Clock()
 
@@ -173,4 +182,6 @@ def main():
         pygame.display.update()
     pygame.quit()
 
-main()
+run_solar_system()
+
+gg
