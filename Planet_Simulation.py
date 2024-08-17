@@ -1,3 +1,12 @@
+"""
+Planet_Simulation.py
+
+Simulation of Planetary Motions with real values and physics.
+
+Author: Gierado Pham
+Date: 2024-08-16
+"""
+
 import pygame
 import math
 pygame.init()
