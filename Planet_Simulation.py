@@ -7,8 +7,11 @@ Author: Gierado Pham
 Date: 2024-08-16
 """
 
+# Importing necessary modules
 import pygame
 import math
+import planet_data
+
 pygame.init()
 
 WIDTH, HEIGHT = 1900, 1000
@@ -16,25 +19,14 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Planet Simulation")
 
 WHITE = (255, 255, 255)
-SUN = (255, 255,0)
-MERCURY = (216,103,61)
-VENUS = (206,174,81)
-EARTH = (100,149,237)
-MARS = (188,39,50)
-JUPITER = (168,106,25)
-SATURN = (230,171,30)
-URANUS = (32,230,204)
-NEPTUNE = (14,140,225)
-#PLUTO = (14,190,225)
 
 FONT = pygame.font.SysFont("comicsans", 16)
 
 class Planet:
-    AU = 149.6e9        #distance from the Earth to Sun
-    G = 6.6743e-11      #gravitational constant or attraction between two objects
-    SCALE = 175 / AU    # 1AU = 100 pixels
-    TIMESTEP = 3600*24  # 1 day
+    G = 6.6743e-11    # Gravitational constant or attraction between two objects
+    TIMESTEP = 3600*24    # 1 day in seconds
 
+    # Initiating the planet's properties
     def __init__(self,x,y,radius,color,mass):
         self.x = x
         self.y = y
@@ -49,6 +41,7 @@ class Planet:
         self.x_vel = 0
         self.y_vel = 0
 
+    # Accouting for the offset of the simulation window
     def draw(self, win, offset_x=0, offset_y=0, zoom=1):
         # Adjust the position of the planet for zoom and pan
         x = (self.x * self.SCALE * zoom) + WIDTH/2 + offset_x
@@ -78,6 +71,7 @@ class Planet:
                 distance_text = FONT.render(f"{round(self.distance_to_sun/1000, 1)}km", 1, WHITE)
                 win.blit(distance_text, (x - distance_text.get_width()/2, y - distance_text.get_height()/2))
 
+    # Calculating the force of attraction between two objects
     def attraction(self,other):
         other_x, other_y = other.x, other.y
         distance_x = other_x - self.x
