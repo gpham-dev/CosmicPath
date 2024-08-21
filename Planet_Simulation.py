@@ -11,29 +11,63 @@ Date: 2024-08-16
 import pygame
 import math
 import planet_data
-
-# Pygame simulation window preferences
 pygame.init()
+
 WIDTH, HEIGHT = 1900, 1000
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Planet Simulation")
-WHITE = (255, 255, 255)
+
 FONT = pygame.font.SysFont("comicsans", 16)
 
-# Represents a planet in the simulation with physical properties, orbital dynamics, 
-# and methods for drawing and updating its position based on gravitational forces.
-class Planet:
-    G = 6.6743e-11    # Gravitational constant or attraction between two objects
-    TIMESTEP = 3600*24    # 1 day in seconds
+space_image = pygame.transform.smoothscale((pygame.image.load("space.jpg")),(1900,1000))
 
-    # Initiating the planet's properties
-    def __init__(self,x,y,radius,color,mass):
+sun_image = pygame.transform.smoothscale((pygame.image.load("sun.png")), \
+                (150, int((pygame.image.load("sun.png")).get_height() * \
+                (150 / (pygame.image.load("sun.png")).get_width()))))
+
+mercury_image = pygame.transform.smoothscale((pygame.image.load("mercury.png")), \
+                (50, int((pygame.image.load("mercury.png")).get_height() * \
+                (50 / (pygame.image.load("mercury.png")).get_width()))))
+
+venus_image = pygame.transform.smoothscale((pygame.image.load("venus.png")), \
+                (50, int((pygame.image.load("venus.png")).get_height() * \
+                (50 / (pygame.image.load("venus.png")).get_width()))))
+
+earth_image = pygame.transform.smoothscale((pygame.image.load("earth.png")), \
+                (100, int((pygame.image.load("earth.png")).get_height() * \
+                (100 / (pygame.image.load("earth.png")).get_width()))))
+
+mars_image = pygame.transform.smoothscale((pygame.image.load("mars.png")), \
+                (50, int((pygame.image.load("mars.png")).get_height() * \
+                (50 / (pygame.image.load("mars.png")).get_width()))))
+
+jupiter_image = pygame.transform.smoothscale((pygame.image.load("jupiter.png")), \
+                (300, int((pygame.image.load("jupiter.png")).get_height() * \
+                (300 / (pygame.image.load("jupiter.png")).get_width()))))
+
+saturn_image = pygame.transform.smoothscale((pygame.image.load("saturn.png")), \
+                (250, int((pygame.image.load("saturn.png")).get_height() * \
+                (250 / (pygame.image.load("saturn.png")).get_width()))))
+
+uranus_image = pygame.transform.smoothscale((pygame.image.load("uranus.png")), \
+                (125, int((pygame.image.load("uranus.png")).get_height() * \
+                (125 / (pygame.image.load("uranus.png")).get_width()))))
+
+neptune_image = pygame.transform.smoothscale((pygame.image.load("neptune.png")), \
+                (125, int((pygame.image.load("neptune.png")).get_height() * \
+                (125 / (pygame.image.load("neptune.png")).get_width()))))
+
+class Planet:
+    SCALE = 175 / planet_data.AU    # 1AU = 100 pixels
+    TIMESTEP = 3600*24  # 1 day
+
+    def __init__(self,x,y,radius,color,mass,image=None):
         self.x = x
         self.y = y
         self.radius = radius
         self.color = color
         self.mass = mass
-
+        self.image = image
         self.orbit = []
         self.sun = False
         self.distance_to_sun = 0
@@ -41,145 +75,96 @@ class Planet:
         self.x_vel = 0
         self.y_vel = 0
 
-    # Accouting for the offset of the simulation window
-    def draw(self, win, offset_x=0, offset_y=0, zoom=1):
-        # Adjust the position of the planet for zoom and pan
-        x = (self.x * self.SCALE * zoom) + WIDTH/2 + offset_x
-        y = (self.y * self.SCALE * zoom) + HEIGHT/2 + offset_y
-
-        # Update the orbit points to reflect the current zoom and pan
+    def draw(self,win):
+        x = self.x * self.SCALE + WIDTH/2
+        y = self.y * self.SCALE + HEIGHT/2
+    
         if len(self.orbit) > 2:
             updated_points = []
             for point in self.orbit:
-                point_x, point_y = point
-                point_x = (point_x * self.SCALE * zoom) + WIDTH / 2 + offset_x
-                point_y = (point_y * self.SCALE * zoom) + HEIGHT / 2 + offset_y
-                updated_points.append((point_x, point_y))
-
-            # Draw the orbit trail
+                x, y = point
+                x = x * self.SCALE + WIDTH / 2
+                y = y * self.SCALE + HEIGHT / 2
+                updated_points.append((x, y))
+                
             pygame.draw.lines(win, self.color, False, updated_points, 2)
-
-        # Draw the planet itself
-        pygame.draw.circle(win, self.color, (int(x), int(y)), int(self.radius * zoom))
+        if self.image:
+            image_rect = self.image.get_rect(center=(x, y))
+            win.blit(self.image, image_rect)
+        else:
+            pygame.draw.circle(win, self.color, (x, y), self.radius)
         
-        # Draw the distance to the sun (only if it's not the sun itself)
         if not self.sun:
-            distance_text = FONT.render(f"{round(self.distance_to_sun/1000, 1)}km", 1, WHITE)
+            distance_text = FONT.render(f"{round(self.distance_to_sun/1000, 1)}km", 1, (255,255,255))
             win.blit(distance_text, (x - distance_text.get_width()/2, y - distance_text.get_height()/2))
-
-            if not self.sun:
-                distance_text = FONT.render(f"{round(self.distance_to_sun/1000, 1)}km", 1, WHITE)
-                win.blit(distance_text, (x - distance_text.get_width()/2, y - distance_text.get_height()/2))
-
-    # Calculating the force of attraction between two objects
     def attraction(self,other):
         other_x, other_y = other.x, other.y
         distance_x = other_x - self.x
         distance_y = other_y - self.y
-        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)    # Using Pythagorean Theorem to find distance between two planetary bodies
+        distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
 
         if other.sun:
             self.distance_to_sun = distance
 
-        force = self.G * self.mass * other.mass / distance ** 2    # Gravitational force using Newton's Law of Universal Graviation
-        theta = math.atan2(distance_y,distance_x)   # Angle between the two planets and the horizontal axis
-        force_x = math.cos(theta)*force    # Gravitational force in the x-direction
-        force_y = math.sin(theta)*force    # Gravitational force in the y-direction
+        force = planet_data.G * self.mass * other.mass / distance ** 2
+        theta = math.atan2(distance_y,distance_x)
+        force_x = math.cos(theta)*force
+        force_y = math.sin(theta)*force
         return force_x, force_y
-    
-    # Update planet's position and velocity based on gravitational force from other planetary bodies
+
     def update_position(self,planets):
-
-        # Initializing total x and y direction forces
         total_fx = total_fy = 0
-
-        # Iteration through each planet to calculate gravitational force
         for planet in planets:
             if self == planet:
                 continue
-            # Gravitational force exerted by current planet
+
             fx, fy = self.attraction(planet)
-            # Sum of the forces in x and y directions
             total_fx += fx
             total_fy += fy
         
-        # Update planet's velocity based on total force and mass using Newton's second law:
-        # Force = mass * acceleration (F=m*a)
-        self.x_vel += total_fx / self.mass * self.TIMESTEP 
+        self.x_vel += total_fx / self.mass * self.TIMESTEP
         self.y_vel += total_fy / self.mass * self.TIMESTEP
 
-        # Update planet's position based on velocity using Newton's second law of motion
         self.x += self.x_vel * self.TIMESTEP
         self.y += self.y_vel * self.TIMESTEP
         self.orbit.append((self.x,self.y))
 
-# Initialize and run the planetary simulation
-def run_solar_system():
-
-    # Initialize simulation parameters
+def main():
     run = True
     clock = pygame.time.Clock()
 
-    sun = Planet(0,0,30,SUN, 1.98892 * 10 **30)
+    sun = Planet(0, 0, 30, planet_data.SUN['color'], planet_data.SUN['mass'],sun_image)
     sun.sun = True
-    mercury = Planet(.387*Planet.AU, 0, 10, MERCURY, 3.30 * 10 **23)
-    venus = Planet(.723*Planet.AU, 0, 13, VENUS, 4.89 * 10 **24)
-    earth = Planet(-1*Planet.AU, 0, 16, EARTH, 5.9742 * 10 **24)
-    mars = Planet(-1.524*Planet.AU, 0, 11, MARS, 6.42 * 10 **23)
-    jupiter = Planet(-2.203*Planet.AU, 0, 30, JUPITER, 1.90 * 10 **27)
-    saturn = Planet(2.582*Planet.AU, 0, 27, SATURN, 5.68 * 10 **26)
-    uranus = Planet(-2.701*Planet.AU, 0, 20, URANUS, 8.7 * 10 **25)
-    neptune = Planet(2.947*Planet.AU, 0, 20, NEPTUNE, 10.2 * 10 **25)
-    # pluto = Planet(-39.53*Planet.AU, 0, 5, PLUTO, 5.9742 * 10 **24)
-#
-    mercury.y_vel= -47.4 * 1000
-#    venus = Planet(-.6794*Planet.AU, 0.2473*Planet.AU, 13, VENUS, 4.89 * 10 **24)
-    venus.y_vel = -35.02 * 1000
-#    earth = Planet(.7071*Planet.AU, 0.7071*Planet.AU, 16, EARTH, 5.9742 * 10 **24)
-    earth.y_vel = 29.783 * 1000
-#    mars = Planet(1.0776*Planet.AU, -1.0776*Planet.AU, 11, MARS, 6.42 * 10 **23)
-    mars.y_vel = 24.077 * 1000
-#    jupiter = Planet(1.347*Planet.AU,-5.03*Planet.AU, 30, JUPITER, 1.90 * 10 **27)
-    jupiter.y_vel = 20.05 * 1000
-#    saturn = Planet(9.25*Planet.AU, 2.48*Planet.AU, 27, SATURN, 5.68 * 10 **26)
-    saturn.y_vel = -18.46 * 1000
-#    uranus = Planet(18.11*Planet.AU,-17.49*Planet.AU, 20, URANUS, 8.7 * 10 **25)
-    uranus.y_vel = 18.11 * 1000
-#    neptune = Planet(30.047*Planet.AU, 0, 20, NEPTUNE, 10.2 * 10 **25)
-    neptune.y_vel = -17.43 * 1000 
-    #pluto = Planet(-39.53*Planet.AU, 0, 5, PLUTO, 5.9742 * 10 **24)
+    mercury = Planet(planet_data.MERCURY['orbital_distance'], 0, 10, planet_data.MERCURY['color'], planet_data.MERCURY['mass'],mercury_image)
+    venus = Planet(planet_data.VENUS['orbital_distance'], 0, 13, planet_data.VENUS['color'],planet_data.VENUS['mass'],venus_image)
+    earth = Planet(planet_data.EARTH['orbital_distance'], 0, 16, planet_data.EARTH['color'], planet_data.EARTH['mass'],earth_image)
+    mars = Planet(planet_data.MARS['orbital_distance'], 0, 11, planet_data.MARS['color'], planet_data.MARS['mass'],mars_image)
+    jupiter = Planet(planet_data.JUPITER['orbital_distance']/2.3, 0, 30, planet_data.JUPITER['color'], planet_data.JUPITER['mass'],jupiter_image)
+    saturn = Planet(planet_data.SATURN['orbital_distance']/3.4, 0, 27, planet_data.SATURN['color'], planet_data.SATURN['mass'],saturn_image)
+    uranus = Planet(planet_data.URANUS['orbital_distance']/5.7, 0, 20, planet_data.URANUS['color'], planet_data.URANUS['mass'],uranus_image)
+    neptune = Planet(planet_data.NEPTUNE['orbital_distance']/7.8, 0, 20, planet_data.NEPTUNE['color'], planet_data.NEPTUNE['mass'],neptune_image)
 
-    #planets = [sun,earth,mercury,venus,mars,jupiter,saturn,uranus,neptune]
+    mercury.y_vel= planet_data.MERCURY['orbital_velocity']
+    venus.y_vel = planet_data.VENUS['orbital_velocity']
+    earth.y_vel = planet_data.EARTH['orbital_velocity']
+    mars.y_vel = planet_data.MARS['orbital_velocity']
+    jupiter.y_vel = planet_data.JUPITER['orbital_velocity']
+    saturn.y_vel = planet_data.SATURN['orbital_velocity']
+    uranus.y_vel = planet_data.URANUS['orbital_velocity']
+    neptune.y_vel = planet_data.NEPTUNE['orbital_velocity']
+
     planets = [sun,earth,mercury,venus,mars,jupiter,saturn,uranus,neptune]
-    offset_x = 0  # Initialize the x offset for panning
-    offset_y = 0  # Initialize the y offset for panning
-    zoom = 1  # Initialize the zoom level
+
     while run:
         clock.tick(60)
-        WIN.fill((0, 0, 0))
-        
+        WIN.fill((0,0,0))
+        WIN.blit(space_image,(0,0))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_PLUS:
-                    zoom += 0.1  # Zoom in
-                elif event.key == pygame.K_MINUS:
-                    zoom -= 0.1  # Zoom out
-                elif event.key == pygame.K_LEFT:
-                    offset_x += 20  # Pan left
-                elif event.key == pygame.K_RIGHT:
-                    offset_x -= 20  # Pan right
-                elif event.key == pygame.K_UP:
-                    offset_y += 20  # Pan up
-                elif event.key == pygame.K_DOWN:
-                    offset_y -= 20  # Pan down
-        
         for planet in planets:
-            planet.update_position(planets)  # This is the correct method call
-            planet.draw(WIN, offset_x, offset_y, zoom)
-        
+            planet.update_position(planets) 
+            planet.draw(WIN)
         pygame.display.update()
     pygame.quit()
-
-run_solar_system()
+main()
