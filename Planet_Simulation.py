@@ -19,43 +19,43 @@ pygame.display.set_caption("Planet Simulation")
 
 FONT = pygame.font.SysFont("comicsans", 16)
 
-space_image = pygame.transform.smoothscale((pygame.image.load("space.jpg")),(1900,1000))
+space_image = pygame.transform.smoothscale((pygame.image.load("pictures/space.jpg")),(1900,1000))
 
-sun_image = pygame.transform.smoothscale((pygame.image.load("sun.png")), \
-                (150, int((pygame.image.load("sun.png")).get_height() * \
-                (150 / (pygame.image.load("sun.png")).get_width()))))
+sun_image = pygame.transform.smoothscale((pygame.image.load("pictures/sun.png")), \
+                (150, int((pygame.image.load("pictures/sun.png")).get_height() * \
+                (150 / (pygame.image.load("pictures/sun.png")).get_width()))))
 
-mercury_image = pygame.transform.smoothscale((pygame.image.load("mercury.png")), \
-                (50, int((pygame.image.load("mercury.png")).get_height() * \
-                (50 / (pygame.image.load("mercury.png")).get_width()))))
+mercury_image = pygame.transform.smoothscale((pygame.image.load("pictures/mercury.png")), \
+                (50, int((pygame.image.load("pictures/mercury.png")).get_height() * \
+                (50 / (pygame.image.load("pictures/mercury.png")).get_width()))))
 
-venus_image = pygame.transform.smoothscale((pygame.image.load("venus.png")), \
-                (50, int((pygame.image.load("venus.png")).get_height() * \
-                (50 / (pygame.image.load("venus.png")).get_width()))))
+venus_image = pygame.transform.smoothscale((pygame.image.load("pictures/venus.png")), \
+                (50, int((pygame.image.load("pictures/venus.png")).get_height() * \
+                (50 / (pygame.image.load("pictures/venus.png")).get_width()))))
 
-earth_image = pygame.transform.smoothscale((pygame.image.load("earth.png")), \
-                (100, int((pygame.image.load("earth.png")).get_height() * \
-                (100 / (pygame.image.load("earth.png")).get_width()))))
+earth_image = pygame.transform.smoothscale((pygame.image.load("pictures/earth.png")), \
+                (100, int((pygame.image.load("pictures/earth.png")).get_height() * \
+                (100 / (pygame.image.load("pictures/earth.png")).get_width()))))
 
-mars_image = pygame.transform.smoothscale((pygame.image.load("mars.png")), \
-                (50, int((pygame.image.load("mars.png")).get_height() * \
-                (50 / (pygame.image.load("mars.png")).get_width()))))
+mars_image = pygame.transform.smoothscale((pygame.image.load("pictures/mars.png")), \
+                (50, int((pygame.image.load("pictures/mars.png")).get_height() * \
+                (50 / (pygame.image.load("pictures/mars.png")).get_width()))))
 
-jupiter_image = pygame.transform.smoothscale((pygame.image.load("jupiter.png")), \
-                (300, int((pygame.image.load("jupiter.png")).get_height() * \
-                (300 / (pygame.image.load("jupiter.png")).get_width()))))
+jupiter_image = pygame.transform.smoothscale((pygame.image.load("pictures/jupiter.png")), \
+                (300, int((pygame.image.load("pictures/jupiter.png")).get_height() * \
+                (300 / (pygame.image.load("pictures/jupiter.png")).get_width()))))
 
-saturn_image = pygame.transform.smoothscale((pygame.image.load("saturn.png")), \
-                (250, int((pygame.image.load("saturn.png")).get_height() * \
-                (250 / (pygame.image.load("saturn.png")).get_width()))))
+saturn_image = pygame.transform.smoothscale((pygame.image.load("pictures/saturn.png")), \
+                (250, int((pygame.image.load("pictures/saturn.png")).get_height() * \
+                (250 / (pygame.image.load("pictures/saturn.png")).get_width()))))
 
-uranus_image = pygame.transform.smoothscale((pygame.image.load("uranus.png")), \
-                (125, int((pygame.image.load("uranus.png")).get_height() * \
-                (125 / (pygame.image.load("uranus.png")).get_width()))))
+uranus_image = pygame.transform.smoothscale((pygame.image.load("pictures/uranus.png")), \
+                (125, int((pygame.image.load("pictures/uranus.png")).get_height() * \
+                (125 / (pygame.image.load("pictures/uranus.png")).get_width()))))
 
-neptune_image = pygame.transform.smoothscale((pygame.image.load("neptune.png")), \
-                (125, int((pygame.image.load("neptune.png")).get_height() * \
-                (125 / (pygame.image.load("neptune.png")).get_width()))))
+neptune_image = pygame.transform.smoothscale((pygame.image.load("pictures/neptune.png")), \
+                (125, int((pygame.image.load("pictures/neptune.png")).get_height() * \
+                (125 / (pygame.image.load("pictures/neptune.png")).get_width()))))
 
 class Planet:
     SCALE = 175 / planet_data.AU    # 1AU = 100 pixels
