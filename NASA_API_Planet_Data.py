@@ -1,9 +1,9 @@
 """
 NASA_API_Planet_Data.py
 
-Contains data and constants for the planetary simulation,
-including real values for planetary radii, distances, 
-and other physical properties.
+Fetches and processes planetary data from NASA's HORIZONS API.
+The script retrieves real values for planetary radii, masses, 
+distances from the Sun, and orbital velocities.
 
 Author: Gierado Pham
 Date: 2024-09-05
