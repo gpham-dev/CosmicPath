@@ -203,10 +203,10 @@ def main():
     venus = Planet(planet_data.VENUS['orbital_distance'], 0, 13, planet_data.VENUS['color'],planet_data.VENUS['mass'],venus_image)
     earth = Planet(planet_data.EARTH['orbital_distance'], 0, 16, planet_data.EARTH['color'], planet_data.EARTH['mass'],earth_image)
     mars = Planet(planet_data.MARS['orbital_distance'], 0, 11, planet_data.MARS['color'], planet_data.MARS['mass'],mars_image)
-    jupiter = Planet(planet_data.JUPITER['orbital_distance']/2.3, 0, 30, planet_data.JUPITER['color'], planet_data.JUPITER['mass'],jupiter_image)
-    saturn = Planet(planet_data.SATURN['orbital_distance']/3.4, 0, 27, planet_data.SATURN['color'], planet_data.SATURN['mass'],saturn_image)
-    uranus = Planet(planet_data.URANUS['orbital_distance']/5.7, 0, 20, planet_data.URANUS['color'], planet_data.URANUS['mass'],uranus_image)
-    neptune = Planet(planet_data.NEPTUNE['orbital_distance']/7.8, 0, 20, planet_data.NEPTUNE['color'], planet_data.NEPTUNE['mass'],neptune_image)
+    jupiter = Planet(planet_data.JUPITER['orbital_distance'], 0, 30, planet_data.JUPITER['color'], planet_data.JUPITER['mass'],jupiter_image)
+    saturn = Planet(planet_data.SATURN['orbital_distance'], 0, 27, planet_data.SATURN['color'], planet_data.SATURN['mass'],saturn_image)
+    uranus = Planet(planet_data.URANUS['orbital_distance'], 0, 20, planet_data.URANUS['color'], planet_data.URANUS['mass'],uranus_image)
+    neptune = Planet(planet_data.NEPTUNE['orbital_distance'], 0, 20, planet_data.NEPTUNE['color'], planet_data.NEPTUNE['mass'],neptune_image)
 
     mercury.y_vel= planet_data.MERCURY['orbital_velocity']
     venus.y_vel = planet_data.VENUS['orbital_velocity']

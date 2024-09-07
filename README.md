@@ -2,7 +2,12 @@
 
 ## Planetary Motion Simulation
 
-This project is a Python-based simulation of the motion of planets in our solar system, using real-world data and physical principles. By calculating gravitational interactions between celestial bodies, it accurately models their orbits, velocities, and positions. Using Pygame for visualization, the simulation provides an interactive, scientific view of planetary dynamics based on up-to-date and realistic values.
+This project is a Python-based simulation of planetary motion in our solar system, using real-world data and physical principles. It calculates gravitational interactions between celestial bodies to model their orbits, velocities, and positions accurately. The simulation, visualized with Pygame, offers an interactive and scientific view of planetary dynamics based on up-to-date values.
+
+### Assumptions:
+- **Orbital Distance** Data for this parameter could not be obtained from NASA's HORIZONS API. Therefore, alternative credible sources were used for accurate data. The orbital distances of Jupiter, Saturn, Uranus, and Neptune were scaled down to fit all planets within the simulation window.
+- **Orbital Velocity** To maintain accurate orbits despite the scaled-down distances, the orbital velocities of Jupiter, Saturn, Uranus, and Neptune were scaled up. This adjustment compensates for the reduced distances to avoid unrealistic gravitational interactions.
+- **Orbit Shape** According to Kepler's Law of Planetary Motion, the planets' orbit should be more of an elliptical shape, but his simulation simplifies them to circular orbits for ease of visualization and computation.
 
 ### Key Features:
 - **Real-world physics:** The simulation uses accurate planetary data—like mass, radius, orbital velocity, and distance from the Sun—to create realistic orbits.
@@ -30,5 +35,7 @@ This project is a Python-based simulation of the motion of planets in our solar 
 1. Clone the repository to your local machine.
 2. Install the required dependencies.
 3. Run `Planet_Simulation.py` to launch the simulation and watch the planets move!
+
+**Note:** Neptune will take approximately 3 minutes in the simulation to complete one orbit due to its large orbital distance and slower orbital velocity.
 
 
