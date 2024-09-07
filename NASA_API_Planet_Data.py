@@ -1,5 +1,5 @@
 """
-planet_data.py
+NASA_API_Planet_Data.py
 
 Contains data and constants for the planetary simulation,
 including real values for planetary radii, distances, 
@@ -17,6 +17,7 @@ url = "https://ssd.jpl.nasa.gov/api/horizons.api"
 
 # Dictionary for each planet and their respective IDs in NASA Horizon
 planet_dict = {
+    "Sun":"10",  # The sun is a celestial body but we will put it here for now
     "Mercury": "199",
     "Venus": "299",
     "Earth": "399",
@@ -51,13 +52,35 @@ def fetch_planet_data(planet_name, planet_id):
     result_text = data.get('result', '')
 
     # Print result text for debugging
-    print(f"Result text for {planet_name}: {result_text}")
+    #print(f"Result text for {planet_name}: {result_text}")
 
     # Use regex to parse mass, radius, distance from Sun, and orbital velocity
     mass = re.search(r"Mass x10\^(\d+) \(kg\)\s*=\s*([\d\.]+)", result_text)
     radius = re.search(r"Vol\. Mean Radius \(km\)\s*=\s*([\d\.]+)", result_text)
     distance = re.search(r"Mean distance from Sun \(km\)\s*=\s*([\d\.]+)", result_text)
-    orbital_velocity = re.search(r"Mean Orbit vel\. km/s\s*=\s*([\d\.]+)", result_text)
+    orbital_velocity = re.search(r"Mean Orbit vel.\  km/s\s*=\s*([\d\.]+)", result_text)
+    
+    # Accounting for different mass, radius, and orbital velocity outputs for each planet
+    if not mass:
+        mass = re.search(r"Mass x 10\^(\d+) \(g\)\s*=\s*([\d\.]+)", result_text)
+        if not mass:
+            mass = re.search(r"Mass, 10\^(\d+) kg\s*=\s~*([\d\.]+)", result_text)
+
+    if not radius:
+        radius = re.search(r"Vol\. mean radius \(km\)\s*=\s*([\d\.]+)", result_text)
+        if not radius:
+            radius = re.search(r"Vol\. mean radius, km\s*=\s*([\d\.]+)", result_text)
+    if not orbital_velocity:
+        orbital_velocity = re.search(r"Orbit speed,\ km/s\s*=\s*([\d\.]+)", result_text)
+        if not orbital_velocity:
+            orbital_velocity = re.search(r"Orbital speed,\ km/s\s*=\s*([\d\.]+)", result_text)
+            if not orbital_velocity:
+                orbital_velocity = re.search(r"Mean orbit speed,\ km/s\s*=\s*([\d\.]+)", result_text)
+                if not orbital_velocity:
+                    orbital_velocity = re.search(r"Mean orbit velocity \s*=\s*([\d\.]+)", result_text)
+                    if not orbital_velocity:
+                        orbital_velocity = re.search(r"Orbital speed,\  km/s\s*=\s*([\d\.]+)", result_text)
+
 
     # Mass
     if mass:
@@ -76,11 +99,11 @@ def fetch_planet_data(planet_name, planet_id):
         print(f"Radius data not found for {planet_name}")
 
     # Distance from Sun
-    if distance:
-        distance = float(distance.group(1))
-    else:
-        distance = None
-        print(f"Distance data not found for {planet_name}")
+    # if distance:
+    #     distance = float(distance.group(1))
+    # else:
+    #     distance = None
+    #     print(f"Distance data not found for {planet_name}")
 
     # Orbital Velocity
     if orbital_velocity:
@@ -95,22 +118,15 @@ def fetch_planet_data(planet_name, planet_id):
         "Radius (km)": radius,
         "Mass (kg)": mass,
         "Distance to Sun (km)": distance,
-        "Orbital Velocity": orbital_velocity
+        "Orbital Velocity (km/s)": orbital_velocity
     })
 
-print("Fetching data")
+print("Fetching Data")
 for planet_name, planet_id in planet_dict.items():
     fetch_planet_data(planet_name, planet_id)
-print("Finished fetching data")
+print("Fetching Data Completed")
 
 # Convert list to DataFrame and print
 df = pd.DataFrame(planet_data)
+print("Results Summary: ")
 print(df)
-
-
-Earth = df[df['Planet'] == "Earth"]
-print(Earth)
-earth_radius = Earth['Radius (km)'].values[0]
-print(earth_radius)
-earth_mass = Earth['Mass (kg)'].values[0]
-print(earth_mass)
